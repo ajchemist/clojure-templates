@@ -1,0 +1,32 @@
+{:paths ["src/core" "resources"]
+
+
+ :deps
+ {
+  io.github.ajchemist/github.clj.alpha {:git/tag "2022.279.10782", :git/sha "73aec41"}
+  io.github.seancorfield/deps-new      {:git/tag "v0.4.13" :git/sha "879c4eb"}
+  }
+
+
+ :aliases
+ {:test
+  {:extra-paths ["src/test"]
+   :extra-deps
+   {
+    io.github.clojure/tools.build {:git/tag "v0.8.3" :git/sha "0d20256"}
+    }}
+
+
+  :test-runner
+  {:extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
+   :main-opts  ["-m" "cognitect.test-runner" "-d" "src/test"]
+   :exec-fn    cognitect.test-runner.api/test
+   :exec-args  {:dirs     ["src/test"]
+                :excludes [:deprecated]}}
+
+
+  :self
+  {:deps
+   {io.github.ajchemist/clojure-templates {:git/sha "1b05530cca6a9efe733d2581e88bbbe5a4c43855"}}}
+  }
+ }

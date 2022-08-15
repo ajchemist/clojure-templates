@@ -1,0 +1,8 @@
+.cache
+.cpcache
+.eastwood
+.nrepl*
+out
+cljs-test-runner-out
+.clj-kondo/.cache
+.lsp/.cache

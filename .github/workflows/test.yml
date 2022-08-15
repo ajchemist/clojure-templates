@@ -1,0 +1,77 @@
+name: Main CI
+
+
+on:
+  push:
+    paths:
+      - '.github/workflows/test.yml'
+      - 'deps.edn'
+      - 'src/core/**/*.clj'
+      - 'src/core/**/*.cljs'
+      - 'src/core/**/*.cljc'
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+
+env:
+  clojure-cli: "latest"
+  java-version: "19"
+  library: io.github.ajchemist/clojure-templates
+
+
+jobs:
+  test:
+    if: "!(contains(github.event.head_commit.message, 'ci skip') || contains(github.event.head_commit.message, 'skip ci'))"
+    runs-on: ubuntu-latest
+    permissions: write-all
+    strategy:
+      matrix:
+        clojure: [ "1.11" ]
+    name: test @ CLJ = ${{ matrix.clojure }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: ${{ env.java-version }}
+      - name: Set up clojure-cli
+        uses: DeLaGuardo/setup-clojure@9.5
+        with:
+          cli: ${{ env.clojure-cli }}
+      - name: Cache clojure dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.gitlibs
+            ~/.deps.clj
+          key: cljdeps-${{ runner.os }}-${{ hashFiles('**/deps.edn') }}
+          restore-keys: |
+            cljdeps-${{ runner.os }}-
+
+
+      - name: Test runner
+        run: |
+          clojure -X:provided:test:test-runner
+
+
+      - name: Test (templates)
+        env:
+          DEPS: "{:deps {io.github.ajchemist/clojure-templates {:git/sha \"${{ github.sha }}\"}}}"
+        run: |
+          clojure -Ttools install-latest :lib io.github.seancorfield/deps-new :as new
+          clojure -Sdeps "$DEPS" -Tnew create :template ajchemist.templates/scratch :name io.github.ajchemist/scratch-example
+          clojure -J-Dio.github.ajchemist.templates.verbose=1 -Sdeps "$DEPS" -Tnew create :template ajchemist.templates/scratch :name io.github.ajchemist/scratch-example :overwrite true
+          tree -a scratch-example
+          cat scratch-example/.ci/meta.edn
+
+
+      - name: Discord action job digest notification
+        uses: sarisia/actions-status-discord@v1
+        if: always() # Pick up events even if the job fails or is canceled.
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}

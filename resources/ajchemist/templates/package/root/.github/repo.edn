@@ -1,0 +1,5 @@
+{
+ :org        "{{github/org}}"
+ :repository "{{scm/user}}/{{scm/repo}}"
+ :basic-auth ["{{scm/user}}" "{{github.token/pass-name}}"]
+ }

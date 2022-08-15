@@ -1,0 +1,4 @@
+{
+ :data-fn     ajchemist.templates.scratch/data-fn
+ :template-fn ajchemist.templates.scratch/template-fn
+ }

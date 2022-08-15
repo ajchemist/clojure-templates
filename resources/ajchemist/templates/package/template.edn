@@ -1,0 +1,6 @@
+{
+ :data-fn ajchemist.templates.package/data-fn
+
+ :transform
+ [["src" "src/core/{{top/file}}"]
+  ["test" "src/test/{{top/file}}"]]}

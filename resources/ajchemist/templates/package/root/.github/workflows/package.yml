@@ -1,0 +1,125 @@
+name: Package CI
+
+
+on:
+  push:
+    paths:
+      - ".github/workflows/package.yml"
+      - "deps.edn"
+      - 'build/package.clj'
+      - "src/core/**/*.clj"
+      - "src/core/**/*.cljc"
+      - "src/test/**/*.clj"
+      - "src/test/**/*.cljc"
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+
+env:
+  java-version: '19'
+  clojure-cli: latest
+  library: {{name}}
+
+
+jobs:
+  test:
+    if: "!(contains(github.event.head_commit.message, 'ci skip') || contains(github.event.head_commit.message, 'skip ci'))"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        clojure: [ "1.11" ]
+    name: test @ CLJ = ${{ matrix.clojure }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: ${{ env.java-version }}
+      - name: Set up clojure-cli
+        uses: DeLaGuardo/setup-clojure@9.5
+        with:
+          cli: ${{ env.clojure-cli }}
+      - name: Cache clojure dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.gitlibs
+            ~/.deps.clj
+          key: cljdeps-${{ runner.os }}-${{ hashFiles('**/deps.edn') }}
+          restore-keys: |
+            cljdeps-${{ runner.os }}-
+
+
+      - name: Test runner
+        env:
+          TESTOPT: "-X:provided:test:test-runner"
+        run: |
+          clojure $TESTOPT
+
+
+  package:
+    needs: [ test ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: ${{ env.java-version }}
+      - name: Set up clojure-cli
+        uses: DeLaGuardo/setup-clojure@9.5
+        with:
+          cli: ${{ env.clojure-cli }}
+      - name: Cache clojure dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.gitlibs
+            ~/.deps.clj
+          key: cljdeps-${{ runner.os }}-${{ hashFiles('**/deps.edn') }}
+          restore-keys: |
+            cljdeps-${{ runner.os }}-
+
+
+      - name: Preparation
+        run: |
+          cp .ci/settings.xml $HOME/.m2/
+          mvn dependency:get -Dartifact=org.apache.maven.plugins:maven-deploy-plugin:2.8
+
+
+      - name: Make package
+        run: |
+          clojure -T:build jar :lib ${{ env.library }}
+
+      - name: Deploy
+        env:
+          CLOJARS_USERNAME: ${{ secrets.CLOJARS_USERNAME }}
+          CLOJARS_PASSWORD: ${{ secrets.CLOJARS_PASSWORD }}
+        run: mvn deploy:deploy-file -DpomFile="pom.xml" -Dfile="target/package.jar" -Dpackaging=jar -DrepositoryId="clojars" -Durl="https://clojars.org/repo"
+
+
+      - name: Push a commit using the built-in token
+        run: |
+          git config --local user.name $GITHUB_ACTOR
+          git config --local user.email $(git --no-pager show --format="<%ae>" -s HEAD)
+          git add -- pom.xml
+          VERSION="$(clojure -X:build:maven-tool print-pom-version)"
+          git commit -m "$VERSION [ci skip]"
+          git tag $VERSION
+          git remote -v
+          git push
+          git push --tags
+
+
+      - name: Discord action job digest notification
+        uses: sarisia/actions-status-discord@v1
+        if: always() # Pick up events even if the job fails or is canceled.
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
