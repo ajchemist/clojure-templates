@@ -1,6 +1,6 @@
 {
  :org        "{{github/org}}"
- :repository "{{scm/user}}/{{scm/repo}}"
+ :repository "{{github/repository}}"
 
  :github.token/pass-name "{{github.token/pass-name}}"
  }
