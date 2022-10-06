@@ -15,7 +15,7 @@
   [{:as data}]
   (-> data
     (update :github.token/pass-name
-      #(or % (str "io/github/ajchemist/templates/github/pat/" (:scm/user data))))))
+      #(or % (str "github.com/tokens/" (:github/user data))))))
 
 
 (defn ensure-github
