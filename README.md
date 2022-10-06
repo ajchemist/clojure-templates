@@ -9,7 +9,7 @@ title: io.github.ajchemist/clojure-templates
 ``` shell
 {:aliases
  {:io.github.ajchemist/clojure-templates
-  {:deps {io.github.ajchemist/clojure-templates {:git/sha "9ca115b479fc7f65c3245654351bec5ca8dd036c" #_:local/root "..."}}}}}
+  {:deps {io.github.ajchemist/clojure-templates {:git/sha "1feb68ba5896886b1429bcac47e3398623b971b0" #_:local/root "..."}}}}}
 ```
 
 
