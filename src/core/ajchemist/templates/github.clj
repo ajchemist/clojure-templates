@@ -21,5 +21,6 @@
 (defn ensure-github
   [data]
   (-> data
+    (update :github/org #(or % nil))
     (ensure-github-user)
     (ensure-github-token-pass-name)))
