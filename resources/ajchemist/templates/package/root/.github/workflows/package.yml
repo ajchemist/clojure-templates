@@ -2,6 +2,7 @@ name: Package CI
 
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - ".github/workflows/package.yml"
@@ -12,10 +13,10 @@ on:
       - "src/test/**/*.clj"
       - "src/test/**/*.cljc"
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 
 
 env:

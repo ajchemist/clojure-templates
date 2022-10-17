@@ -2,6 +2,7 @@ name: Lint
 
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - '.github/workflows/lint.yml'
@@ -10,14 +11,14 @@ on:
       - 'src/core/**/*.cljs'
       - 'src/core/**/*.cljc'
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 
 
 env:
-  clj-kondo-version: '2022.09.08'
+  clj-kondo-version: '2022.10.05'
 
 
 jobs:

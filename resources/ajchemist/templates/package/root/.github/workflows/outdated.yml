@@ -8,10 +8,10 @@ on:
       - '.github/workflows/outdated.yml'
       - 'deps.edn'
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 
 
 env:
