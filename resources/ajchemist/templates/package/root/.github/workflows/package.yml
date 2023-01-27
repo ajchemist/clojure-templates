@@ -41,7 +41,7 @@ jobs:
           distribution: 'zulu'
           java-version: ${{ env.java-version }}
       - name: Set up clojure-cli
-        uses: DeLaGuardo/setup-clojure@9.5
+        uses: DeLaGuardo/setup-clojure@10.1
         with:
           cli: ${{ env.clojure-cli }}
       - name: Cache clojure dependencies
@@ -74,7 +74,7 @@ jobs:
           distribution: 'zulu'
           java-version: ${{ env.java-version }}
       - name: Set up clojure-cli
-        uses: DeLaGuardo/setup-clojure@9.5
+        uses: DeLaGuardo/setup-clojure@10.1
         with:
           cli: ${{ env.clojure-cli }}
       - name: Cache clojure dependencies
