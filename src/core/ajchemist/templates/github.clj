@@ -8,7 +8,7 @@
   [{:as data}]
   (-> data
     (update :github/user
-      #(or % (:scm/user data)))))
+      #(str (or % (:scm/user data))))))
 
 
 (defn ensure-github-repository
@@ -24,13 +24,12 @@
   [{:as data}]
   (-> data
     (update :github.token/pass-name
-      #(or % (str "github.com/tokens/" (:github/user data))))))
+      #(str (or % (str "github.com/tokens/" (:github/user data)))))))
 
 
 (defn ensure-github
   [data]
   (-> data
-    (update :github/org #(or % nil))
     (ensure-github-user)
     (ensure-github-repository)
     (ensure-github-token-pass-name)))

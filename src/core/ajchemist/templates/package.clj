@@ -14,7 +14,7 @@
   ;; returning nil means no changes to options data
   (tap> [:debug data])
   (-> data
-    (t.core/ensure-template-meta)
+    (t.core/ensure-template-deps)
     (t.github/ensure-github)))
 
 

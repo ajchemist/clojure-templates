@@ -14,7 +14,7 @@
     (edn/read (PushbackReader. rdr))))
 
 
-(defmulti template-meta
+(defmulti deps-manifest
   (fn [coord]
     (cond
       (find coord :git/sha)     :git
@@ -23,7 +23,7 @@
       :else                     (:deps/manifest coord))))
 
 
-(defmethod template-meta :git
+(defmethod deps-manifest :git
   [coord]
   (reduce-kv
     (fn [ret k v]
@@ -33,7 +33,7 @@
     coord))
 
 
-(defmethod template-meta :mvn
+(defmethod deps-manifest :mvn
   [coord]
   (reduce-kv
     (fn [ret k v]
@@ -43,7 +43,7 @@
     coord))
 
 
-(defmethod template-meta :local
+(defmethod deps-manifest :local
   [coord]
   (reduce-kv
     (fn [ret k v]
@@ -53,19 +53,38 @@
     coord))
 
 
-(defmethod template-meta :default
+(defmethod deps-manifest :default
   [coord]
   (dissoc coord :paths :dependents :parents))
 
 
-(defn ensure-template-meta
+(defn template-deps-manifest
+  ([template-name]
+   (template-deps-manifest (current-basis) template-name))
+  ([basis template-name]
+   (-> basis (get-in [:libs template-name]) (deps-manifest))))
+
+
+(defn ensure-template-deps-name
+  [data]
+  (-> data
+    (update :template/deps-name #(or % 'io.github.ajchemist/clojure-templates))))
+
+
+(defn ensure-template-deps-manifest
+  [data]
+  (-> data
+    (update :template/deps-manifest #(or % (template-deps-manifest (:template/deps-name data))))))
+
+
+(defn ensure-template-deps
   "data-fn handler.
 
   Result is merged onto existing options data."
   [data]
-  (update data
-    :template/meta
-    #(or % (-> (current-basis) (get-in [:libs 'io.github.ajchemist/clojure-templates]) (template-meta)))))
+  (-> data
+    (ensure-template-deps-name)
+    (ensure-template-deps-manifest)))
 
 
 ;;

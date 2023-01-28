@@ -1,4 +1,5 @@
 {
- :template      "{{template}}"
- :template/meta {{template/meta}}
+ :template               "{{template}}"
+ :template/deps-name     {{template/deps-name}}
+ :template/deps-manifest {{template/deps-manifest}}
  }

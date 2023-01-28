@@ -12,7 +12,7 @@
   [data]
   ;; returning nil means no changes to options data
   (tap> [:debug data])
-  (core/ensure-template-meta data))
+  (core/ensure-template-deps data))
 
 
 (defn template-fn
