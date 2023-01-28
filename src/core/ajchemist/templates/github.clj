@@ -33,3 +33,7 @@
     (ensure-github-user)
     (ensure-github-repository)
     (ensure-github-token-pass-name)))
+
+
+(def data-wrap
+  #(fn [data] (% (ensure-github data))))

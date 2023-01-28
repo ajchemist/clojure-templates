@@ -1,18 +1,11 @@
 (ns ajchemist.templates.scratch
   (:require
    [clojure.java.io :as jio]
-   [ajchemist.templates.core :as core]
+   [ajchemist.templates.core :as t.core]
    ))
 
 
-(defn data-fn
-  "Example data-fn handler.
-
-  Result is merged onto existing options data."
-  [data]
-  ;; returning nil means no changes to options data
-  (tap> [:debug data])
-  (core/ensure-template-deps data))
+(def data-fn (t.core/configure-data-fn identity [t.core/data-wrap-template-deps]))
 
 
 (defn template-fn
@@ -22,8 +15,8 @@
   [edn {:keys [overwrite] :as data}]
   ;; must return the whole EDN hash map
   #_(with-open [w (jio/writer (doto (jio/file (:target-dir data) "INFO") (jio/make-parents)))]
-    (binding [*out* w]
-      (prn data)))
+      (binding [*out* w]
+        (prn data)))
   (tap> ^:println [:debug "template-fn [edn]"])
   (tap> [:debug edn])
   (tap> ^:println [:debug "template-fn [data]"])
@@ -33,4 +26,4 @@
 
 
 #_:clj-kondo/ignore
-(defonce ^:private setup-tap (add-tap core/tap))
+(defonce ^:private setup-tap (add-tap t.core/tap))

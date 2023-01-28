@@ -87,6 +87,29 @@
     (ensure-template-deps-manifest)))
 
 
+(def data-wrap-template-deps
+  #(fn [data] (% (ensure-template-deps data))))
+
+
+;;
+
+
+(defn configure-data-fn
+  "`data-fn` -> chain [wrap1, wrap2]
+
+  return (wrap2 (wrap1 data-fn))"
+  [data-fn & middleware-chains]
+  (let [data-fn' (reduce
+                   (fn [ret chain]
+                     (reduce #(%2 %1) ret (reverse chain)))
+                   data-fn
+                   middleware-chains)]
+    (fn
+      [data]
+      (tap> [:debug {:step :data-fn :data data}])
+      (data-fn' data))))
+
+
 ;;
 
 

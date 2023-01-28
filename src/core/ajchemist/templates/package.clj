@@ -6,16 +6,11 @@
    ))
 
 
-(defn data-fn
-  "data-fn handler.
-
-  Result is merged onto existing options data."
-  [data]
-  ;; returning nil means no changes to options data
-  (tap> [:debug data])
-  (-> data
-    (t.core/ensure-template-deps)
-    (t.github/ensure-github)))
+(def data-fn
+  (t.core/configure-data-fn
+    identity
+    [t.core/data-wrap-template-deps
+     t.github/data-wrap]))
 
 
 (defn template-fn
