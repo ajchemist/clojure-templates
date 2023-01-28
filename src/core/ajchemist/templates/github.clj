@@ -30,6 +30,7 @@
 (defn ensure-github
   [data]
   (-> data
+    (update :github/org #(or % "")) ; insert blank value
     (ensure-github-user)
     (ensure-github-repository)
     (ensure-github-token-pass-name)))
