@@ -2,10 +2,15 @@
   (:require
    [clojure.java.io :as jio]
    [ajchemist.templates.core :as t.core]
+   [ajchemist.templates.github :as t.github]
    ))
 
 
-(def data-fn (t.core/configure-data-fn identity [t.core/data-wrap-template-deps]))
+(def data-fn
+  (t.core/configure-data-fn
+    identity
+    [t.core/data-wrap-template-deps
+     t.github/data-wrap]))
 
 
 (defn template-fn
