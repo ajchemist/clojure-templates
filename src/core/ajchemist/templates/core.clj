@@ -106,8 +106,10 @@
                    middleware-chains)]
     (fn
       [data]
-      (tap> [:debug {:step :data-fn :data data}])
-      (data-fn' data))))
+      (tap> [:debug {:step :before-data-fn :data data}])
+      (let [data' (data-fn' data)]
+        (tap> [:debug {:step :after-data-fn :data data'}])
+        data'))))
 
 
 ;;
